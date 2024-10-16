@@ -1,30 +1,37 @@
 const express = require('express');
 const app = express();
 
-// Sirve los archivos estáticos
-app.use(express.static('public'));
-
-// Ruta para la API
+// Ruta principal para la API de marca de tiempo
 app.get('/api/:date?', (req, res) => {
+    let dateParam = req.params.date;
     let date;
-    if (!req.params.date) {
+
+    // Si no hay parámetro de fecha, usa la fecha actual
+    if (!dateParam) {
         date = new Date();
-    } else if (!isNaN(req.params.date)) {
-        date = new Date(parseInt(req.params.date));
     } else {
-        date = new Date(req.params.date);
+        // Si el parámetro es numérico, parsearlo como timestamp
+        if (!isNaN(dateParam)) {
+            date = new Date(parseInt(dateParam));
+        } else {
+            // Si no es numérico, intenta parsearlo como una cadena de fecha
+            date = new Date(dateParam);
+        }
     }
 
+    // Manejo de fechas inválidas
     if (date.toString() === "Invalid Date") {
         return res.json({ error: "Invalid Date" });
     }
 
+    // Devolver respuesta con unix y utc
     res.json({
         unix: date.getTime(),
         utc: date.toUTCString()
     });
 });
 
+// Servidor escuchando en el puerto 3000
 app.listen(3000, () => {
     console.log('Server is running on port 3000');
 });
