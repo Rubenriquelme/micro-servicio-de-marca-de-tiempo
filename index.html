@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Timestamp Microservice</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Microservicio de marca de tiempo</h1>
+        <input type="text" id="dateInput" placeholder="Introduzca una fecha o déjelo en blanco">
+        <button onclick="fetchTimestamp()">Obtener marca de tiempo</button>
+        <div id="result"></div>
+    </div>
+
+    <script>
+        function fetchTimestamp() {
+            const dateInput = document.getElementById('dateInput').value;
+            const url = dateInput ? `http://localhost:3000/api/${dateInput}` : 'http://localhost:3000/api/';
+            
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    const result = document.getElementById('result');
+                    if (data.error) {
+                        result.innerHTML = `<p>Error: ${data.error}</p>`;
+                    } else {
+                        result.innerHTML = `<p>Unix: ${data.unix}</p><p>UTC: ${data.utc}</p>`;
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+        }
+    </script>
+</body>
+</html>
